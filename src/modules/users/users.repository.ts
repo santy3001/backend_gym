@@ -1,20 +1,30 @@
-import { getDb } from "../../config/database";
+import UserModel, { IUser } from "./user.model";
 
 export class UsersRepository {
-    private collection(){
-        return getDb().collection('users')
-    }
+  async findAll() {
+    return await UserModel.find();
+  }
 
-    async create(data:any){
-        const result = await this.collection().insertOne(data);
-        return { _id: result.insertedId, ...data }  
-    }
+  async findById(id: string) {
+    return await UserModel.findById(id);
+  }
 
-    async findAllUsers(){
-        return this.collection().find().toArray();
-    }
+  async findByEmail(email: string) {
+    return await UserModel.findOne({ email });
+  }
 
-    async findByEmail(email: string){
-        return this.collection().findOne({email});
-    }
+  async create(data: IUser) {
+    return await UserModel.create(data);
+  }
+
+  async updateById(
+    id: string,
+    data: Partial<Pick<IUser, "name" | "email" | "password" | "role">>
+  ) {
+    return await UserModel.findByIdAndUpdate(id, data, { new: true });
+  }
+
+  async deleteById(id: string) {
+    return await UserModel.findByIdAndDelete(id);
+  }
 }

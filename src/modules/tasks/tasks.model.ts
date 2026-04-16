@@ -1,27 +1,24 @@
-import { ObjectId } from 'mongodb';
+import { Schema, model } from "mongoose";
 
-export type TaskStatus = "pending" | "in_progress" | "review" | "done";
-export type TaskPriority = "low" | "medium" | "high";
-
-export interface Subtask {
-    _id?: ObjectId;
-    title: string;
-    isDone: boolean;
-    assignedTo?: ObjectId;
+export interface ITask {
+  title: string;
+  description?: string;
+  status: "pending" | "in_progress" | "done";
 }
 
-export interface Task {
-    _id?: ObjectId;
-    title: string;
-    description?: string;
-    projectId: ObjectId;      // proyecto al que pertenece
-    assignedTo?: ObjectId;    // usuario asignado
-    createdBy: ObjectId;      // quien creó la tarea
-    status: TaskStatus;
-    priority: TaskPriority;
-    dueDate?: Date;
-    subtasks: Subtask[];
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-}
+const taskSchema = new Schema<ITask>(
+  {
+    title: { type: String, required: true },
+    description: { type: String },
+    status: {
+      type: String,
+      enum: ["pending", "in_progress", "done"],
+      default: "pending"
+    }
+  },
+  { timestamps: true }
+);
+
+const TaskModel = model<ITask>("Task", taskSchema);
+
+export default TaskModel;

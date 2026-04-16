@@ -1,56 +1,69 @@
 import { Request, Response, NextFunction } from "express";
 import { CommentsService } from "./comments.service";
-import { createCommentSchema } from "./comments.schema";
 
 export class CommentsController {
-    private readonly commentsService = new CommentsService();
+  private readonly commentsService = new CommentsService();
 
-    create = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const data = createCommentSchema.parse(req.body);
-            const userId = (req as any).user?.sub;
+  async getAll(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const comments = await this.commentsService.getAllComments();
+      res.status(200).json(comments);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-            if (!userId) {
-                return res.status(401).json({
-                    message: "Usuario no autenticado",
-                });
-            }
+  async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = String(req.params.id);
+      const comment = await this.commentsService.getCommentById(id);
 
-            const comment = await this.commentsService.create(data, userId);
+      if (!comment) {
+        return res.status(404).json({ message: "Comentario no encontrado" });
+      }
 
-            return res.status(201).json(comment);
-        } catch (error) {
-            next(error);
-        }
-    };
+      res.status(200).json(comment);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-    findByTask = async (req: Request, res: Response, next: NextFunction) => {
-        try {
+  async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const comment = await this.commentsService.createComment(req.body);
+      res.status(201).json(comment);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-            const taskId = req.params.taskId as string;
-            const comments = await this.commentsService.findByTask(taskId);
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = String(req.params.id);
+      const comment = await this.commentsService.updateComment(id, req.body);
 
-            return res.status(200).json(comments);
-        } catch (error) {
-            next(error);
-        }
-    };
+      if (!comment) {
+        return res.status(404).json({ message: "Comentario no encontrado" });
+      }
 
-    delete = async (
-        req: Request<{ id: string }>,
-        res: Response,
-        next: NextFunction
-    ) => {
-        try {
-            const { id } = req.params;
+      res.status(200).json(comment);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-            await this.commentsService.delete(id);
+  async remove(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = String(req.params.id);
+      const comment = await this.commentsService.deleteComment(id);
 
-            return res.status(200).json({
-                message: "Comentario eliminado correctamente",
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+      if (!comment) {
+        return res.status(404).json({ message: "Comentario no encontrado" });
+      }
+
+      res.status(200).json({ message: "Comentario eliminado" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

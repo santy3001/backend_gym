@@ -1,19 +1,16 @@
-import { getDb } from "../../config/database";
-import { User } from "../users/users.model";
-
+import User from "../users/user.model";
 
 export class AuthRepository {
-    private collection() {
-        return getDb().collection<User>('users')
-    }
+  async findByEmail(email: string) {
+    return await User.findOne({ email });
+  }
 
-    async findEmail(email: string): Promise<User | null> {
-        return this.collection().findOne({ email })
-    }
-
-    async create(user: User): Promise<User> {
-        const result = await this.collection().insertOne(user)
-        return { _id: result.insertedId, ...user }
-    }
-
+  async create(data: {
+    name: string;
+    email: string;  
+    password: string;
+    role: string;
+  }) {
+    return await User.create(data);
+  }
 }

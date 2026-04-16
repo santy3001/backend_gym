@@ -1,14 +1,28 @@
 import { Router } from "express";
 import { CommentsController } from "./comments.controller";
-import { createCommentSchema } from "./comments.schema";
-import { validate } from "../../middlewares/validate.middleware";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 const commentsController = new CommentsController();
 
-router.post("/", authMiddleware, validate(createCommentSchema),commentsController.create);
-router.get("/task/:taskId",authMiddleware,commentsController.findByTask);
-router.delete("/:id",authMiddleware,commentsController.delete);
+router.get("/", authMiddleware, (req, res, next) =>
+  commentsController.getAll(req, res, next)
+);
+
+router.get("/:id", authMiddleware, (req, res, next) =>
+  commentsController.getById(req, res, next)
+);
+
+router.post("/", authMiddleware, (req, res, next) =>
+  commentsController.create(req, res, next)
+);
+
+router.put("/:id", authMiddleware, (req, res, next) =>
+  commentsController.update(req, res, next)
+);
+
+router.delete("/:id", authMiddleware, (req, res, next) =>
+  commentsController.remove(req, res, next)
+);
 
 export default router;

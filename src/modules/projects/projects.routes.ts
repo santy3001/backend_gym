@@ -1,17 +1,28 @@
 import { Router } from "express";
 import { ProjectsController } from "./projects.controller";
-import { createProjectSchema } from "./projects.schema";
-import { validate } from "../../middlewares/validate.middleware";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 const projectsController = new ProjectsController();
 
-router.post("/", authMiddleware, validate(createProjectSchema), projectsController.create);
-router.get("/", authMiddleware, projectsController.findAll);
-router.get("/all/:id", authMiddleware, projectsController.findByIdAll);
-router.get("/me", authMiddleware, projectsController.findByUser);
-router.get("/:id", authMiddleware, projectsController.findById);
-router.delete("/:id", authMiddleware, projectsController.delete);
+router.get("/", authMiddleware, (req, res, next) =>
+  projectsController.getAll(req, res, next)
+);
+
+router.get("/:id", authMiddleware, (req, res, next) =>
+  projectsController.getById(req, res, next)
+);
+
+router.post("/", authMiddleware, (req, res, next) =>
+  projectsController.create(req, res, next)
+);
+
+router.put("/:id", authMiddleware, (req, res, next) =>
+  projectsController.update(req, res, next)
+);
+
+router.delete("/:id", authMiddleware, (req, res, next) =>
+  projectsController.remove(req, res, next)
+);
 
 export default router;

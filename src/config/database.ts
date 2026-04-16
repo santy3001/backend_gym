@@ -1,19 +1,22 @@
-import { MongoClient, Db } from "mongodb";
-import { env } from "./env";
+import mongoose from "mongoose";
 
-let client: MongoClient;
-let db: Db;
-
-export const connectDB = async (): Promise<void> => {
-    client = new MongoClient(env.mongoUri);
-    await client.connect();
-    db = client.db(env.mongoDbName);
-    console.log('Mongo se conecto!!!')
-}
-
-export const getDb = (): Db => {
-    if (!db) {
-        throw new Error('La base de datos no ha sido inicializada');
+const connectDB = async (): Promise<void> => {
+  try {
+    const uri = process.env.MONGO_URI;
+    if (!uri) {
+      throw new Error("MONGO_URI no está definida");
     }
-    return db;
-}
+
+    await mongoose.connect(uri);
+    console.log("MongoDB conectado");
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error conectando a MongoDB:", error.message);
+    } else {
+      console.error("Error conectando a MongoDB:", error);
+    }
+    process.exit(1);
+  }
+};
+
+export default connectDB;

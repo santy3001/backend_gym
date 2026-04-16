@@ -1,17 +1,28 @@
 import { Router } from "express";
 import { TasksController } from "./tasks.controller";
-import { createTaskSchema } from "./tasks.schema";
-import { validate } from "../../middlewares/validate.middleware";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 const tasksController = new TasksController();
 
-router.post("/", authMiddleware, validate(createTaskSchema), tasksController.create);
-router.get("/", authMiddleware, tasksController.findAll);
-router.get("/me", authMiddleware, tasksController.findByUser);
-router.get("/project/:projectId", authMiddleware, tasksController.findByProject);
-router.get("/:id", authMiddleware, tasksController.findById);
-router.delete("/:id", authMiddleware, tasksController.delete);
+router.get("/", authMiddleware, (req, res, next) =>
+  tasksController.getAll(req, res, next)
+);
+
+router.get("/:id", authMiddleware, (req, res, next) =>
+  tasksController.getById(req, res, next)
+);
+
+router.post("/", authMiddleware, (req, res, next) =>
+  tasksController.create(req, res, next)
+);
+
+router.put("/:id", authMiddleware, (req, res, next) =>
+  tasksController.update(req, res, next)
+);
+
+router.delete("/:id", authMiddleware, (req, res, next) =>
+  tasksController.remove(req, res, next)
+);
 
 export default router;

@@ -1,37 +1,29 @@
-import { ObjectId } from "mongodb";
 import { CommentsRepository } from "./comments.repository";
-import { Comment } from "./comments.model";
-import { CreateCommentDto } from "./comments.schema";
+import { IComment } from "./comments.model";
 
 export class CommentsService {
   private readonly repository = new CommentsRepository();
 
-  async create(data: CreateCommentDto, userId: string): Promise<Comment> {
-    const now = new Date();
-
-    const comment: Comment = {
-      taskId: new ObjectId(data.taskId),
-      authorId: new ObjectId(userId),
-      message: data.message,
-      isActive: true,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    return await this.repository.create(comment);
+  async getAllComments() {
+    return await this.repository.findAll();
   }
 
-  async findByTask(taskId: string): Promise<Comment[]> {
-    return await this.repository.findByTask(taskId);
+  async getCommentById(commentId: string) {
+    return await this.repository.findById(commentId);
   }
 
-  async delete(commentId: string): Promise<void> {
-    const comment = await this.repository.findById(commentId);
+  async createComment(data: IComment) {
+    return await this.repository.create(data);
+  }
 
-    if (!comment) {
-      throw new Error("El comentario no existe");
-    }
+  async updateComment(
+    commentId: string,
+    data: Partial<Pick<IComment, "text" | "userId" | "projectId">>
+  ) {
+    return await this.repository.updateById(commentId, data);
+  }
 
-    await this.repository.delete(commentId);
+  async deleteComment(commentId: string) {
+    return await this.repository.deleteById(commentId);
   }
 }

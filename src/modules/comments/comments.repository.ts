@@ -1,47 +1,26 @@
-import { ObjectId } from "mongodb";
-import { getDb } from "../../config/database";
-import { Comment } from "./comments.model";
+import CommentModel, { IComment } from "./comments.model";
 
 export class CommentsRepository {
-  private collection() {
-    return getDb().collection<Comment>("comments");
+  async findAll() {
+    return await CommentModel.find();
   }
 
-  async create(data: Comment): Promise<Comment> {
-    const result = await this.collection().insertOne(data);
-
-    return {
-      _id: result.insertedId,
-      ...data,
-    };
+  async findById(id: string) {
+    return await CommentModel.findById(id);
   }
 
-  async findByTask(taskId: string): Promise<Comment[]> {
-    return await this.collection()
-      .find({
-        taskId: new ObjectId(taskId),
-        isActive: true,
-      })
-      .sort({ createdAt: 1 })
-      .toArray();
+  async create(data: IComment) {
+    return await CommentModel.create(data);
   }
 
-  async findById(id: string): Promise<Comment | null> {
-    return await this.collection().findOne({
-      _id: new ObjectId(id),
-      isActive: true,
-    });
+  async updateById(
+    id: string,
+    data: Partial<Pick<IComment, "text" | "userId" | "projectId">>
+  ) {
+    return await CommentModel.findByIdAndUpdate(id, data, { new: true });
   }
 
-  async delete(commentId: string) {
-    return await this.collection().updateOne(
-      { _id: new ObjectId(commentId) },
-      {
-        $set: {
-          isActive: false,
-          updatedAt: new Date(),
-        },
-      }
-    );
+  async deleteById(id: string) {
+    return await CommentModel.findByIdAndDelete(id);
   }
 }

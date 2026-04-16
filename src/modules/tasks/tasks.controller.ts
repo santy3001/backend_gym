@@ -1,89 +1,69 @@
 import { Request, Response, NextFunction } from "express";
 import { TasksService } from "./tasks.service";
-import { createTaskSchema } from "./tasks.schema";
 
 export class TasksController {
-    private readonly tasksService = new TasksService();
+  private readonly tasksService = new TasksService();
 
-    create = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const data = createTaskSchema.parse(req.body);
-            const userId = (req as any).user?.sub;
+  async getAll(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const tasks = await this.tasksService.getAllTasks();
+      res.status(200).json(tasks);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-            if (!userId) {
-                return res.status(401).json({
-                    message: "Usuario no autenticado",
-                });
-            }
+  async getById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = String(req.params.id);
+      const task = await this.tasksService.getTaskById(id);
 
-            const task = await this.tasksService.create(data, userId);
+      if (!task) {
+        return res.status(404).json({ message: "Tarea no encontrada" });
+      }
 
-            return res.status(201).json(task);
-        } catch (error) {
-            next(error);
-        }
-    };
+      res.status(200).json(task);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-    findAll = async (_req: Request, res: Response, next: NextFunction) => {
-        try {
-            const tasks = await this.tasksService.findAll();
-            return res.status(200).json(tasks);
-        } catch (error) {
-            next(error);
-        }
-    };
+  async create(req: Request, res: Response, next: NextFunction) {
+    try {
+      const task = await this.tasksService.createTask(req.body);
+      res.status(201).json(task);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-    findById = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const id = req.params.id as string;
-            const task = await this.tasksService.findById(id);
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = String(req.params.id);
+      const task = await this.tasksService.updateTask(id, req.body);
 
-            return res.status(200).json(task);
-        } catch (error) {
-            next(error);
-        }
-    };
+      if (!task) {
+        return res.status(404).json({ message: "Tarea no encontrada" });
+      }
 
-    findByProject = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const projectId = req.params.projectId as string;
-            const tasks = await this.tasksService.findByProject(projectId);
+      res.status(200).json(task);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-            return res.status(200).json(tasks);
-        } catch (error) {
-            next(error);
-        }
-    };
+  async remove(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = String(req.params.id);
+      const task = await this.tasksService.deleteTask(id);
 
-    findByUser = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = (req as any).user?.sub;
+      if (!task) {
+        return res.status(404).json({ message: "Tarea no encontrada" });
+      }
 
-            if (!userId) {
-                return res.status(401).json({
-                    message: "Usuario no autenticado",
-                });
-            }
-
-            const tasks = await this.tasksService.findByUser(userId);
-
-            return res.status(200).json(tasks);
-        } catch (error) {
-            next(error);
-        }
-    };
-
-    delete = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const id = req.params.id as string;
-
-            await this.tasksService.delete(id);
-
-            return res.status(200).json({
-                message: "Tarea eliminada correctamente",
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+      res.status(200).json({ message: "Tarea eliminada" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
