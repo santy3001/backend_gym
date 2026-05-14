@@ -1,65 +1,20 @@
-import { Request, Response, NextFunction } from "express";
-import { PlanService } from "./plans.service";
+import { Request, Response } from "express";
 
-type IdParams = { id: string };
-
-export class PlanController {
-  private service = new PlanService();
-
-  create = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await this.service.create(req.body);
-      res.status(201).json(result);
-    } catch (error) {
-      next(error);
+export const getPlans = (_req: Request, res: Response) => {
+  res.json([
+    {
+      "_id": "67f8b1234567890abcdef123",
+      "name": "Básico Mensual", 
+      "price": 150000,
+      "duration": "30 días",
+      "features": ["Acceso gym", "2 clases/semana"]
+    },
+    {
+      "_id": "67f8b1234567890abcdef124",
+      "name": "Premium Semanal",
+      "price": 80000,
+      "duration": "7 días", 
+      "features": ["Gym 24/7", "Clases ilimitadas"]
     }
-  };
-
-  getAll = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await this.service.getAll();
-      res.status(200).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  getById = async (
-    req: Request<IdParams>,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const result = await this.service.getById(req.params.id);
-      res.status(200).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  update = async (
-    req: Request<IdParams>,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const result = await this.service.update(req.params.id, req.body);
-      res.status(200).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  deleteById = async (
-    req: Request<IdParams>,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const result = await this.service.delete(req.params.id);
-      res.status(200).json(result);
-    } catch (error) {
-      next(error);
-    }
-  };
-}
+  ]);
+};

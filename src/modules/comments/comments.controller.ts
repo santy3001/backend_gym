@@ -1,69 +1,15 @@
-import { Request, Response, NextFunction } from "express";
-import { CommentsService } from "./comments.service";
+import { Request, Response } from "express";
 
-export class CommentsController {
-  private readonly commentsService = new CommentsService();
-
-  async getAll(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const comments = await this.commentsService.getAllComments();
-      res.status(200).json(comments);
-    } catch (error) {
-      next(error);
+export const getComments = (_req: Request, res: Response) => {
+  res.json([
+    {
+      "_id": "67f8b1234567890abcdef678",
+      "classId": "67f8b1234567890abcdef456",
+      "className": "Pierna Básica",
+      "memberName": "Juan Pérez",
+      "comment": "Excelente rutina para principiantes",
+      "rating": 5,
+      "date": "2026-05-05"
     }
-  }
-
-  async getById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = String(req.params.id);
-      const comment = await this.commentsService.getCommentById(id);
-
-      if (!comment) {
-        return res.status(404).json({ message: "Comentario no encontrado" });
-      }
-
-      res.status(200).json(comment);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async create(req: Request, res: Response, next: NextFunction) {
-    try {
-      const comment = await this.commentsService.createComment(req.body);
-      res.status(201).json(comment);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = String(req.params.id);
-      const comment = await this.commentsService.updateComment(id, req.body);
-
-      if (!comment) {
-        return res.status(404).json({ message: "Comentario no encontrado" });
-      }
-
-      res.status(200).json(comment);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async remove(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = String(req.params.id);
-      const comment = await this.commentsService.deleteComment(id);
-
-      if (!comment) {
-        return res.status(404).json({ message: "Comentario no encontrado" });
-      }
-
-      res.status(200).json({ message: "Comentario eliminado" });
-    } catch (error) {
-      next(error);
-    }
-  }
-}
+  ]);
+};
