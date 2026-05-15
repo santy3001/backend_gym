@@ -1,20 +1,13 @@
-import swaggerJSDoc from "swagger-jsdoc";
-import path from "path";
+import swaggerJsdoc from "swagger-jsdoc";
 
-export const swaggerSpec = swaggerJSDoc({
+export const swaggerSpec = swaggerJsdoc({
   definition: {
     openapi: "3.0.0",
     info: {
       title: "Gym Enterprise API",
       version: "1.0.0",
-      description: "Documentación de la API",
+      description: "Documentación de la API del gimnasio",
     },
-    servers: [
-      {
-        url: "http://localhost:3000",
-        description: "Servidor local",
-      },
-    ],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -25,5 +18,5 @@ export const swaggerSpec = swaggerJSDoc({
       },
     },
   },
-  apis: [path.join(process.cwd(), "build/modules/**/*.routes.js")],
+  apis: ["src/modules/**/*.routes.ts"],
 });

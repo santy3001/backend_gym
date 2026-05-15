@@ -29,6 +29,7 @@ const controller = new MemberController();
  *             required:
  *               - name
  *               - phone
+ *               - email
  *             properties:
  *               name:
  *                 type: string
@@ -36,6 +37,9 @@ const controller = new MemberController();
  *               phone:
  *                 type: string
  *                 example: "3001234567"
+ *               email:
+ *                 type: string
+ *                 example: juanperez@gmail.com
  *     responses:
  *       201:
  *         description: Miembro creado
@@ -81,6 +85,9 @@ const controller = new MemberController();
  *               phone:
  *                 type: string
  *                 example: "3001234567"
+ *               email:
+ *                 type: string
+ *                 example: juanperez@gmail.com
  *     responses:
  *       200:
  *         description: Miembro actualizado
