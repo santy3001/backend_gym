@@ -37,7 +37,7 @@ app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (_req, res) => {
   res.json({
-    message: "🚀 Gym Enterprise Backend OK - 75% Complete",
+    message: "Gym Enterprise Backend OK ",
     swagger: "http://localhost:3000/api/v1/docs",
   });
 });
